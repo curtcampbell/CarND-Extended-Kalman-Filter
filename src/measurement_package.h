@@ -3,6 +3,8 @@
 
 #include "Eigen/Dense"
 
+class UpdatePolicy;
+
 class MeasurementPackage {
 public:
   long long timestamp_;
@@ -11,6 +13,8 @@ public:
     LASER,
     RADAR
   } sensor_type_;
+
+  UpdatePolicy* updatePolicy_;
 
   Eigen::VectorXd raw_measurements_;
 };

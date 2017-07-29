@@ -4,6 +4,7 @@
 #include <math.h>
 #include "FusionEKF.h"
 #include "tools.h"
+#include "update_policy.h"
 
 using namespace std;
 
@@ -66,8 +67,11 @@ int main()
     	  string sensor_type;
     	  iss >> sensor_type;
 
+          //The updatePolicy_ member will determine the kind of update that gets
+          //done.
     	  if (sensor_type.compare("L") == 0) {
-      	  		meas_package.sensor_type_ = MeasurementPackage::LASER;
+                meas_package.sensor_type_ = MeasurementPackage::LASER;
+      	  		meas_package.updatePolicy_ = fusionEKF.LaserUpdate();
           		meas_package.raw_measurements_ = VectorXd(2);
           		float px;
       	  		float py;
@@ -78,7 +82,8 @@ int main()
           		meas_package.timestamp_ = timestamp;
           } else if (sensor_type.compare("R") == 0) {
 
-      	  		meas_package.sensor_type_ = MeasurementPackage::RADAR;
+              meas_package.sensor_type_ = MeasurementPackage::RADAR;
+              meas_package.updatePolicy_ = fusionEKF.RadarUpdate();
           		meas_package.raw_measurements_ = VectorXd(3);
           		float ro;
       	  		float theta;
@@ -112,10 +117,10 @@ int main()
 
     	  VectorXd estimate(4);
 
-    	  double p_x = fusionEKF.ekf_.x_(0);
-    	  double p_y = fusionEKF.ekf_.x_(1);
-    	  double v1  = fusionEKF.ekf_.x_(2);
-    	  double v2 = fusionEKF.ekf_.x_(3);
+    	  double p_x = fusionEKF._ekf._x(0);
+    	  double p_y = fusionEKF._ekf._x(1);
+    	  double v1  = fusionEKF._ekf._x(2);
+    	  double v2 = fusionEKF._ekf._x(3);
 
     	  estimate(0) = p_x;
     	  estimate(1) = p_y;

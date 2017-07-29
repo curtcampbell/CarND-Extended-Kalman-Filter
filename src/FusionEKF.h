@@ -9,6 +9,8 @@
 #include "kalman_filter.h"
 #include "tools.h"
 
+class UpdatePolicy;
+
 class FusionEKF {
 public:
   /**
@@ -27,9 +29,15 @@ public:
   void ProcessMeasurement(const MeasurementPackage &measurement_pack);
 
   /**
-  * Kalman Filter update and prediction math lives in here.
+  * Kalman Filter state variables live here.
   */
-  KalmanFilter ekf_;
+  KalmanFilter _ekf;
+
+  //Returns an object used to update state variables when there is a Laser reading
+  UpdatePolicy* LaserUpdate() { return _laserUpdatePolicy; }
+
+  //Returns an object used to update state variables when there is a Radar reading
+  UpdatePolicy* RadarUpdate() { return _radarUpdatePolicy; }
 
 private:
   // check whether the tracking toolbox was initialized or not (first measurement)
@@ -38,12 +46,8 @@ private:
   // previous timestamp
   long long previous_timestamp_;
 
-  // tool object used to compute Jacobian and RMSE
-  Tools tools;
-  Eigen::MatrixXd R_laser_;
-  Eigen::MatrixXd R_radar_;
-  Eigen::MatrixXd H_laser_;
-  Eigen::MatrixXd Hj_;
+  UpdatePolicy* _laserUpdatePolicy;
+  UpdatePolicy* _radarUpdatePolicy;
 };
 
 #endif /* FusionEKF_H_ */
